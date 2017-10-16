@@ -24,10 +24,10 @@ else:
 tempo = str(args['tempo'])
 signature = str(len(pattern)) + "/" + str(args['subdivision'])
 
-if 'nosub' in args:
+if args['nosub']:
     pattern = pattern.replace("x",".")
 
-if 'allsub' in args:
+if args['allsub']:
     pattern = pattern.replace(".","x")
 
 
