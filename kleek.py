@@ -3,6 +3,7 @@ import sys
 import subprocess
 import time
 import argparse
+import re
 
 parser = argparse.ArgumentParser(description='Setup some klick, fast !')
 
@@ -11,16 +12,17 @@ parser.add_argument('--pattern', metavar='PATTERN', type=str, nargs='?', help='k
 parser.add_argument('--subdivision', metavar='SUBDIVISION', nargs='?', help='main subdivision (4 = quarter-note, 8 = eigth-note, etc)', default=4)
 parser.add_argument('--nosub', action='store_true', help='mute all minor beats (turn \'x\' to \'.\')')
 parser.add_argument('--allsub', action='store_true', help='play all minor beats (turn \'.\' to \'x\')')
+parser.add_argument('--debug', action='store_true', help='print compiled tempo map')
 
 args = vars(parser.parse_args())
 
 
 if type(args['pattern']) == file and not sys.stdin.isatty():
-    pattern = "".join(args['pattern'].readlines()).replace('\n','')
+    pattern = "".join(args['pattern'].readlines())
 else:
     pattern = args['pattern']
 
-
+pattern = re.sub('[^xX\.]','',pattern, re.MULTILINE)
 tempo = str(args['tempo'])
 signature = str(len(pattern)) + "/" + str(args['subdivision'])
 
@@ -30,11 +32,15 @@ if args['nosub']:
 if args['allsub']:
     pattern = pattern.replace(".","x")
 
+if args['debug']:
+    print 'Tempo map: ' + ' '.join([signature, tempo, pattern])
 
-proc = subprocess.Popen(["klick","-P", "9999999", signature, tempo, pattern],
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.STDOUT)
 
+try:
+    proc = subprocess.Popen(["klick","-P", "9999999", signature, tempo, pattern], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+except:
+    print('Failed to start klick')
+    raise
 
 print('Klick is playing, hit ctrl+c to stop.')
 
