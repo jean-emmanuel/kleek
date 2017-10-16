@@ -33,7 +33,7 @@ if args['allsub']:
     pattern = pattern.replace(".","x")
 
 if args['debug']:
-    print 'Tempo map: ' + ' '.join([signature, tempo, pattern])
+    print('Tempo map: ' + ' '.join([signature, tempo, pattern]))
 
 
 try:
